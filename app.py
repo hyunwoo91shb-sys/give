@@ -55,13 +55,8 @@ UNABLE_TO_ANSWER = (
     "더 정확한 도움을 받으시려면 **세무사** 또는 **금융 전문가**에게 문의해 주세요."
 )
 
-WELCOME_MESSAGE = """안녕하세요! 👋
-
-아이에게 용돈도 주고, 예금·펀드 같은 금융 상품도 가입해 주셨군요? 정말 든든한 부모님이세요 😊
-
-혹시 **증여세 신고**나 **공제 한도**, **절세 방법** 같은 게 궁금하신가요?
-궁금한 것은 무엇이든 편하게 물어봐 주세요!
-"""
+# 채팅창 첫 인사 (배너와 중복되지 않게 간단하게)
+WELCOME_MESSAGE = "안녕하세요! 👋 무엇이든 편하게 질문해 주세요 😊"
 
 QUICK_QUESTIONS = [
     "미성년자 자녀, 증여 공제 한도는 얼마일까?",
@@ -82,10 +77,6 @@ def load_vectorstore(pdf_path: str):
 
 
 def set_background(image_path: str, opacity: float = 0.15):
-    """
-    로컬 이미지를 배경으로 설정합니다.
-    opacity: 0.0(투명) ~ 1.0(불투명), 기본 0.15로 은은하게 표시
-    """
     import base64
     try:
         with open(image_path, "rb") as f:
@@ -117,7 +108,7 @@ def set_background(image_path: str, opacity: float = 0.15):
             unsafe_allow_html=True,
         )
     except FileNotFoundError:
-        pass  # 이미지 없으면 기본 배경 유지
+        pass
 
 
 def init_page():
@@ -127,7 +118,6 @@ def init_page():
 
     # =============================================
     # ✅ 배경 이미지 파일명과 투명도를 여기서 수정하세요
-    # opacity: 0.1(매우 은은) ~ 0.5(선명) 사이 권장
     set_background("background.png", opacity=0.2)
     # =============================================
 
@@ -206,7 +196,6 @@ def handle_chat(user_input, rag_chain, gpt_fallback_chain):
             rag_response = rag_chain.invoke(user_input)
 
         if "RAG_INSUFFICIENT" not in rag_response:
-            # RAG 답변 성공
             response = rag_response
             st.markdown(response)
 
@@ -218,7 +207,6 @@ def handle_chat(user_input, rag_chain, gpt_fallback_chain):
                 )
 
             if "GPT_INSUFFICIENT" in gpt_response:
-                # Step 3: 둘 다 실패 → 답변 불가 안내
                 response = UNABLE_TO_ANSWER
                 st.markdown(response)
             else:
